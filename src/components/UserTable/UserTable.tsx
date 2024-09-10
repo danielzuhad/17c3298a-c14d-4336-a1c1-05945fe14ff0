@@ -20,6 +20,7 @@ import { User } from "@prisma/client";
 import CellComponent from "./CellTable";
 import { formSchema, updateSchema } from "@/schema/formSchema";
 import { validateFields } from "@/utils/validateFields";
+import toast from "react-hot-toast";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -45,10 +46,13 @@ const UserTable = () => {
     createUserMutation,
     updateUserMutation,
     refetch,
+    hanldeIsLoading,
   } = useUserTable();
 
   const [isAdding, setIsAdding] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(false);
+
+  console.log(resetTrigger);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -136,10 +140,15 @@ const UserTable = () => {
         preparedData.forEach((user) => {
           updateSchema.parse(user);
         });
-
-        await updateUserMutation.mutateAsync(preparedData);
+        await toast.promise(updateUserMutation.mutateAsync(preparedData), {
+          loading: "Updating user...",
+          success: "User updated successfully",
+          error: "Failed to update user",
+        });
+        await refetch();
+        setResetTrigger(true);
         cellValuesRef.current = [];
-        refetch();
+        setResetTrigger(false);
       } catch (error) {
         console.log(error);
       }
@@ -150,8 +159,13 @@ const UserTable = () => {
       const hasErrors = Object.keys(methods.formState.errors).length > 0;
       if (!hasErrors) {
         try {
-          const newUser = await createUserMutation.mutateAsync(
-            methods.getValues()
+          await toast.promise(
+            createUserMutation.mutateAsync(methods.getValues()),
+            {
+              loading: "Creating user...",
+              success: "User created successfully",
+              error: "Failed to create user",
+            }
           );
           await refetch();
           setIsAdding(false);
@@ -167,6 +181,7 @@ const UserTable = () => {
     <>
       <div className="w-full  flex flex-col justify-center items-center container">
         <TableAction
+          hanldeIsLoading={hanldeIsLoading}
           onSubmit={onSubmit}
           isAdding={isAdding}
           table={table}

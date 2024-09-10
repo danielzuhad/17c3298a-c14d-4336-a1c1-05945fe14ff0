@@ -7,6 +7,7 @@ import { trpc } from "@/utils/trpc";
 import { getUrl } from "@/utils/getUrl";
 import queryClient from "@/utils/queryClient";
 import SuperJSON from "superjson";
+import { Toaster } from "react-hot-toast";
 
 export function TRPCProvider(
   props: Readonly<{
@@ -37,6 +38,7 @@ export function TRPCProvider(
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
+        <Toaster />
         {props.children}
       </QueryClientProvider>
     </trpc.Provider>

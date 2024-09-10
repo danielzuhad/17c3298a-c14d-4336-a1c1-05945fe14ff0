@@ -11,6 +11,7 @@ interface TableActionProps {
   handleDeleteUsers: (userIds: number[]) => Promise<void>;
   isAdding: boolean;
   onSubmit: () => void;
+  hanldeIsLoading: () => boolean;
 }
 
 const TableAction = ({
@@ -20,6 +21,7 @@ const TableAction = ({
   isAdding,
   onSubmit,
   handleDeleteUsers,
+  hanldeIsLoading,
 }: TableActionProps) => {
   if (isLoading) return null;
 
@@ -28,6 +30,7 @@ const TableAction = ({
       <div className="w-full h-max flex items-center mb-1">
         <div className="w-[50%] sm:w-[40%]">
           <Input
+            disabled={isAdding || hanldeIsLoading()}
             className="h-8"
             type="search"
             value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
@@ -40,6 +43,7 @@ const TableAction = ({
 
         <div className="w-full flex justify-end">
           <Button
+            disabled={hanldeIsLoading()}
             className="rounded-full active:bg-muted-foreground/20 transition-all"
             size={"icon"}
             variant={"ghost"}
@@ -54,6 +58,7 @@ const TableAction = ({
           </Button>
 
           <Button
+            disabled={hanldeIsLoading()}
             className="rounded-full active:bg-muted-foreground/20 transition-all"
             size={"icon"}
             variant={"ghost"}
@@ -67,6 +72,7 @@ const TableAction = ({
           </Button>
 
           <Button
+            disabled={hanldeIsLoading()}
             className="rounded-full active:bg-muted-foreground/20 transition-all"
             size={"icon"}
             variant={"ghost"}

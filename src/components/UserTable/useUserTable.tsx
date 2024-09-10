@@ -4,6 +4,7 @@ import { formSchema, FormSchema } from "@/schema/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { trpc } from "@/utils/trpc";
+import toast from "react-hot-toast";
 
 const useUserTable = () => {
   const { data: users, isLoading, error, refetch } = trpc.getUsers.useQuery();
@@ -19,11 +20,23 @@ const useUserTable = () => {
 
   const handleDeleteUsers = async (userIds: number[]) => {
     try {
-      await deleteUserMutation.mutateAsync(userIds);
+      await toast.promise(deleteUserMutation.mutateAsync(userIds), {
+        loading: "Deleting users...",
+        success: "Users deleted successfully",
+        error: "Error deleting users",
+      });
       await refetch();
     } catch (error) {
       console.error("Error deleting users:", error);
     }
+  };
+
+  const hanldeIsLoading = () => {
+    return (
+      createUserMutation.isPending ||
+      updateUserMutation.isPending ||
+      deleteUserMutation.isPending
+    );
   };
 
   return {
@@ -36,6 +49,7 @@ const useUserTable = () => {
     createUserMutation,
     updateUserMutation,
     refetch,
+    hanldeIsLoading,
   };
 };
 

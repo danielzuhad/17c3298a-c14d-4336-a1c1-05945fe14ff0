@@ -22,7 +22,7 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => (
       <Checkbox
-        className=""
+        className="m-2 xl:ml-4 2xl:ml-7"
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"

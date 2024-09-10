@@ -33,11 +33,11 @@ const CellComponent: React.FC<CellComponentProps> = ({
   const {
     formState: { errors, isDirty },
     getFieldState,
+    setError,
     reset,
+    resetField,
     trigger,
   } = specificMethods;
-
-  console.log(isDirty);
 
   useEffect(() => {
     setValue(initialValue);
@@ -86,7 +86,7 @@ const CellComponent: React.FC<CellComponentProps> = ({
           {...field}
           className={`transition-all ${
             // @ts-ignore
-            getFieldState(id).isDirty && "bg-green-200"
+            !resetTrigger && getFieldState(id).isDirty && "bg-green-200"
             // @ts-ignore
           } ${errors[id] && "bg-red-200"}`}
           // @ts-ignore
