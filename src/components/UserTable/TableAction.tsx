@@ -63,7 +63,6 @@ const TableAction = ({
             size={"icon"}
             variant={"ghost"}
             onClick={onSubmit}
-            // disabled={!isAdding}
           >
             <CircleCheck
               size={20}

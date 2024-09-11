@@ -4,6 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import InputTable from "./InputTable";
 import { z } from "zod";
 import { FormSchema } from "@/schema/formSchema";
+import { UserKeysType } from "@/type/UserKeyType";
+import { Table } from "@tanstack/react-table";
+import { User } from "@prisma/client";
 
 interface CellComponentProps {
   id: string;
@@ -11,7 +14,7 @@ interface CellComponentProps {
   columnSpecificSchema: z.ZodSchema;
   cellValuesRef: React.MutableRefObject<any[]>;
   originalId: number;
-  resetTrigger: boolean;
+  table: Table<User>;
 }
 
 const CellComponent: React.FC<CellComponentProps> = ({
@@ -20,7 +23,6 @@ const CellComponent: React.FC<CellComponentProps> = ({
   columnSpecificSchema,
   cellValuesRef,
   originalId,
-  resetTrigger,
 }) => {
   const [value, setValue] = useState(initialValue);
 
@@ -33,15 +35,16 @@ const CellComponent: React.FC<CellComponentProps> = ({
   const {
     formState: { errors, isDirty },
     getFieldState,
-    setError,
-    reset,
-    resetField,
-    trigger,
+    reset: resetForm,
   } = specificMethods;
 
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
+
+  useEffect(() => {
+    resetForm({ [id]: initialValue });
+  }, [initialValue, id, resetForm]);
 
   const updateCellValue = (id: number, columnId: string, value: any) => {
     cellValuesRef.current = cellValuesRef.current.map((cell) =>
@@ -78,21 +81,16 @@ const CellComponent: React.FC<CellComponentProps> = ({
 
   return (
     <Controller
-      // @ts-ignore
-      name={id}
+      name={id as UserKeysType}
       control={specificMethods.control}
       render={({ field }) => (
         <InputTable
           {...field}
           className={`transition-all ${
-            // @ts-ignore
-            !resetTrigger && getFieldState(id).isDirty && "bg-green-200"
-            // @ts-ignore
-          } ${errors[id] && "bg-red-200"}`}
-          // @ts-ignore
-          error={errors[id]?.message || null}
-          // @ts-ignore
-          isValidating={getFieldState(id).isValidating}
+            getFieldState(id as UserKeysType).isDirty && "bg-green-200"
+          } ${errors[id as UserKeysType] && "bg-red-200"}`}
+          error={errors[id as UserKeysType]?.message || null}
+          isValidating={getFieldState(id as UserKeysType).isValidating}
           type="text"
           value={value as string}
           onChange={async (e) => {
@@ -102,6 +100,7 @@ const CellComponent: React.FC<CellComponentProps> = ({
           }}
           onBlur={(e) => {
             handleBlur(originalId, id)(e);
+            field.onBlur();
           }}
         />
       )}

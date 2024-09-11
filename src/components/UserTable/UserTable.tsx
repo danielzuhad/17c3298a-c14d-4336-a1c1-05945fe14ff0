@@ -7,7 +7,6 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
-  RowData,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -15,18 +14,12 @@ import { useEffect, useRef, useState } from "react";
 import Pagination from "./Pagination";
 import TableAction from "./TableAction";
 import useUserTable from "./useUserTable";
-import { columns } from "./columns";
-import { User } from "@prisma/client";
-import CellComponent from "./CellTable";
-import { formSchema, updateSchema } from "@/schema/formSchema";
+import { updateSchema } from "@/schema/formSchema";
 import { validateFields } from "@/utils/validateFields";
 import toast from "react-hot-toast";
-
-declare module "@tanstack/react-table" {
-  interface TableMeta<TData extends RowData> {
-    updateData: (id: number, columnId: string, value: string) => void;
-  }
-}
+import { columns } from "./columns";
+import CellComponent from "./CellTable";
+import { User } from "@prisma/client";
 
 type UserUpdate = {
   id: number;
@@ -50,10 +43,6 @@ const UserTable = () => {
   } = useUserTable();
 
   const [isAdding, setIsAdding] = useState(false);
-  const [resetTrigger, setResetTrigger] = useState(false);
-
-  console.log(resetTrigger);
-
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -65,11 +54,11 @@ const UserTable = () => {
   const defaultColumn: Partial<ColumnDef<User>> = {
     cell: ({ getValue, row: { original }, column: { id }, table }) => {
       const initialValue = getValue();
-      const columnSpecificSchema = formSchema;
+      const columnSpecificSchema = updateSchema;
 
       return (
         <CellComponent
-          resetTrigger={resetTrigger}
+          table={table}
           id={id}
           initialValue={initialValue}
           columnSpecificSchema={columnSpecificSchema}
@@ -98,7 +87,6 @@ const UserTable = () => {
       rowSelection,
     },
     onPaginationChange: setPagination,
-    debugTable: true,
   });
 
   const checkEmailUnique = (email: string) => {
@@ -146,12 +134,8 @@ const UserTable = () => {
           error: "Failed to update user",
         });
         await refetch();
-        setResetTrigger(true);
         cellValuesRef.current = [];
-        setResetTrigger(false);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     } else {
       // CREATE USER
       validateFields(methods);

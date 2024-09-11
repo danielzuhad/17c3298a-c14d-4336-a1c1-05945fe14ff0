@@ -21,12 +21,14 @@ export const columns: ColumnDef<User>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        className="m-2 xl:ml-4 2xl:ml-7"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div className="w-full flex justify-center -ml-1">
+        <Checkbox
+          // className="md:ml-[3px] lg:ml-2 xl:ml-10"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,

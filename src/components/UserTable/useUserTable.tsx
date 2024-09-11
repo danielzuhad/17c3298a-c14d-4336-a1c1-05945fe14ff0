@@ -1,6 +1,6 @@
 "use client";
 
-import { formSchema, FormSchema } from "@/schema/formSchema";
+import { formSchema, FormSchema, updateSchema } from "@/schema/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { trpc } from "@/utils/trpc";
@@ -17,6 +17,22 @@ const useUserTable = () => {
     resolver: zodResolver(formSchema),
     mode: "onChange",
   });
+
+  const useSpecificMethods = ({
+    id,
+    initialValue,
+  }: {
+    id: string;
+    initialValue: any;
+  }) => {
+    const specificMethods = useForm<FormSchema>({
+      resolver: zodResolver(updateSchema),
+      defaultValues: { [id]: initialValue },
+      mode: "onChange",
+    });
+
+    return specificMethods;
+  };
 
   const handleDeleteUsers = async (userIds: number[]) => {
     try {
@@ -50,6 +66,7 @@ const useUserTable = () => {
     updateUserMutation,
     refetch,
     hanldeIsLoading,
+    useSpecificMethods,
   };
 };
 

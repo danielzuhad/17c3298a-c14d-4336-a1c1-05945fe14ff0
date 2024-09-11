@@ -241,14 +241,7 @@ const DataTable = ({
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    className={`${
-                      cell.column.columnDef.cell === "actions"
-                        ? "align-middle"
-                        : "p-0"
-                    }`}
-                    key={cell.id}
-                  >
+                  <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
